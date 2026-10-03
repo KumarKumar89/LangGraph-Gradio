@@ -1,0 +1,1001 @@
+2025-10-22 12:38:59:__main__:INFO: Starting the interface
+2025-10-22 12:39:00:httpx:INFO: HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-10-22 12:39:01:httpx:INFO: HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-10-22 12:39:01:httpx:INFO: HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-10-22 12:39:01:httpx:INFO: HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-10-22 12:39:25:__main__:INFO: Prompt: 
+2025-10-22 12:39:39:__main__:ERROR: Exception occurred
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 107, in _wrapped_aiter
+    async for response in self._call:  # pragma: no branch
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 365, in _fetch_stream_responses
+    await self._raise_for_status()
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 273, in _raise_for_status
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "The model is overloaded. Please try again later."
+	debug_error_string = "UNKNOWN:Error received from peer ipv6:%5B2404:6800:4009:805::200a%5D:443 {grpc_status:14, grpc_message:"The model is overloaded. Please try again later."}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\app.py", line 74, in chat_fn
+    async for stream_mode, chunk in graph.astream(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2062, in astream
+    async for _ in runner.atick(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 527, in atick
+    _panic_or_proceed(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 619, in _panic_or_proceed
+    raise exc
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\retry.py", line 128, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 583, in ainvoke
+    input = await step.ainvoke(input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 371, in ainvoke
+    ret = await asyncio.create_task(coro, context=context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\graph.py", line 151, in assistant_node
+    response = await chain.ainvoke({"messages": state.messages}, config=config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 3066, in ainvoke
+    input = await asyncio.create_task(part(), context=context)  # type: ignore
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 5372, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 305, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 870, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 830, in agenerate
+    raise exceptions[0]
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 986, in _agenerate_with_cache
+    async for chunk in self._astream(messages, stop=stop, **kwargs):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_google_genai\chat_models.py", line 1123, in _astream
+    async for chunk in await _achat_with_retry(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 110, in _wrapped_aiter
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ServiceUnavailable: 503 The model is overloaded. Please try again later.
+During task with name 'assistant_node' and id 'b1cd0030-a55f-2efd-f9b2-ce402c88a51f'
+2025-10-22 12:41:29:__main__:INFO: Prompt: 
+2025-10-22 12:41:33:__main__:ERROR: Exception occurred
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 107, in _wrapped_aiter
+    async for response in self._call:  # pragma: no branch
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 365, in _fetch_stream_responses
+    await self._raise_for_status()
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 273, in _raise_for_status
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "The model is overloaded. Please try again later."
+	debug_error_string = "UNKNOWN:Error received from peer ipv6:%5B2404:6800:4009:805::200a%5D:443 {grpc_message:"The model is overloaded. Please try again later.", grpc_status:14}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\app.py", line 74, in chat_fn
+    async for stream_mode, chunk in graph.astream(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2062, in astream
+    async for _ in runner.atick(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 527, in atick
+    _panic_or_proceed(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 619, in _panic_or_proceed
+    raise exc
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\retry.py", line 128, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 583, in ainvoke
+    input = await step.ainvoke(input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 371, in ainvoke
+    ret = await asyncio.create_task(coro, context=context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\graph.py", line 151, in assistant_node
+    response = await chain.ainvoke({"messages": state.messages}, config=config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 3066, in ainvoke
+    input = await asyncio.create_task(part(), context=context)  # type: ignore
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 5372, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 305, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 870, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 830, in agenerate
+    raise exceptions[0]
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 986, in _agenerate_with_cache
+    async for chunk in self._astream(messages, stop=stop, **kwargs):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_google_genai\chat_models.py", line 1123, in _astream
+    async for chunk in await _achat_with_retry(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 110, in _wrapped_aiter
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ServiceUnavailable: 503 The model is overloaded. Please try again later.
+During task with name 'assistant_node' and id '15ea8bec-0976-6202-94dd-dc35069c9256'
+2025-10-22 12:41:42:__main__:INFO: Prompt: 
+2025-10-22 12:41:55:graph:INFO: Tool call detected: [{'name': 'tavily_search_results_json', 'args': {'query': 'how does gradio work'}, 'id': '619399ca-51be-43fe-9fc7-29156d8b0a30', 'type': 'tool_call'}]
+2025-10-22 12:41:59:__main__:ERROR: Exception occurred
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 107, in _wrapped_aiter
+    async for response in self._call:  # pragma: no branch
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 365, in _fetch_stream_responses
+    await self._raise_for_status()
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 273, in _raise_for_status
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.RESOURCE_EXHAUSTED
+	details = "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 1.003190532s."
+	debug_error_string = "UNKNOWN:Error received from peer ipv6:%5B2404:6800:4009:805::200a%5D:443 {grpc_status:8, grpc_message:"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2\nPlease retry in 1.003190532s."}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\app.py", line 74, in chat_fn
+    async for stream_mode, chunk in graph.astream(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2062, in astream
+    async for _ in runner.atick(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 527, in atick
+    _panic_or_proceed(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 619, in _panic_or_proceed
+    raise exc
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\retry.py", line 128, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 583, in ainvoke
+    input = await step.ainvoke(input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 371, in ainvoke
+    ret = await asyncio.create_task(coro, context=context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\graph.py", line 151, in assistant_node
+    response = await chain.ainvoke({"messages": state.messages}, config=config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 3066, in ainvoke
+    input = await asyncio.create_task(part(), context=context)  # type: ignore
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 5372, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 305, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 870, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 830, in agenerate
+    raise exceptions[0]
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 986, in _agenerate_with_cache
+    async for chunk in self._astream(messages, stop=stop, **kwargs):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_google_genai\chat_models.py", line 1123, in _astream
+    async for chunk in await _achat_with_retry(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 110, in _wrapped_aiter
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 1.003190532s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 1
+}
+]
+During task with name 'assistant_node' and id 'aeb8d838-3c52-069a-bbc6-a137f7df624f'
+2025-10-22 12:42:50:__main__:INFO: Starting the interface
+2025-10-22 12:42:51:httpx:INFO: HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-10-22 12:42:51:httpx:INFO: HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-10-22 12:42:51:httpx:INFO: HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-10-22 12:42:51:httpx:INFO: HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-10-22 12:42:52:__main__:INFO: Prompt: 
+2025-10-22 12:43:00:graph:INFO: Tool call detected: [{'name': 'tavily_search_results_json', 'args': {'query': 'current mortgage rates in California'}, 'id': 'de834f59-00d0-453a-8e52-343348e668b6', 'type': 'tool_call'}]
+2025-10-22 12:43:20:__main__:ERROR: Exception occurred
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 107, in _wrapped_aiter
+    async for response in self._call:  # pragma: no branch
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 365, in _fetch_stream_responses
+    await self._raise_for_status()
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 273, in _raise_for_status
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.RESOURCE_EXHAUSTED
+	details = "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 40.043224522s."
+	debug_error_string = "UNKNOWN:Error received from peer ipv6:%5B2404:6800:4009:805::200a%5D:443 {grpc_message:"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2\nPlease retry in 40.043224522s.", grpc_status:8}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\app.py", line 74, in chat_fn
+    async for stream_mode, chunk in graph.astream(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2062, in astream
+    async for _ in runner.atick(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 527, in atick
+    _panic_or_proceed(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 619, in _panic_or_proceed
+    raise exc
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\retry.py", line 128, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 583, in ainvoke
+    input = await step.ainvoke(input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 371, in ainvoke
+    ret = await asyncio.create_task(coro, context=context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\graph.py", line 151, in assistant_node
+    response = await chain.ainvoke({"messages": state.messages}, config=config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 3066, in ainvoke
+    input = await asyncio.create_task(part(), context=context)  # type: ignore
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 5372, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 305, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 870, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 830, in agenerate
+    raise exceptions[0]
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 986, in _agenerate_with_cache
+    async for chunk in self._astream(messages, stop=stop, **kwargs):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_google_genai\chat_models.py", line 1123, in _astream
+    async for chunk in await _achat_with_retry(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 110, in _wrapped_aiter
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 40.043224522s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 40
+}
+]
+During task with name 'assistant_node' and id 'e94a114c-5fbd-6203-e96a-9a9904f1f114'
+2025-10-22 12:58:32:__main__:INFO: Starting the interface
+2025-10-22 12:58:33:httpx:INFO: HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-10-22 12:58:33:httpx:INFO: HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-10-22 12:58:33:httpx:INFO: HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-10-22 12:58:33:httpx:INFO: HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-10-22 12:58:40:__main__:INFO: Prompt: 
+2025-10-22 12:58:41:__main__:ERROR: Exception occurred
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 107, in _wrapped_aiter
+    async for response in self._call:  # pragma: no branch
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 365, in _fetch_stream_responses
+    await self._raise_for_status()
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 273, in _raise_for_status
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "The model is overloaded. Please try again later."
+	debug_error_string = "UNKNOWN:Error received from peer ipv6:%5B2404:6800:4009:822::200a%5D:443 {grpc_status:14, grpc_message:"The model is overloaded. Please try again later."}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\app.py", line 74, in chat_fn
+    async for stream_mode, chunk in graph.astream(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2062, in astream
+    async for _ in runner.atick(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 527, in atick
+    _panic_or_proceed(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 619, in _panic_or_proceed
+    raise exc
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\retry.py", line 128, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 583, in ainvoke
+    input = await step.ainvoke(input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 371, in ainvoke
+    ret = await asyncio.create_task(coro, context=context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\graph.py", line 151, in assistant_node
+    response = await chain.ainvoke({"messages": state.messages}, config=config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 3066, in ainvoke
+    input = await asyncio.create_task(part(), context=context)  # type: ignore
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 5372, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 305, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 870, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 830, in agenerate
+    raise exceptions[0]
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 986, in _agenerate_with_cache
+    async for chunk in self._astream(messages, stop=stop, **kwargs):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_google_genai\chat_models.py", line 1123, in _astream
+    async for chunk in await _achat_with_retry(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 110, in _wrapped_aiter
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ServiceUnavailable: 503 The model is overloaded. Please try again later.
+During task with name 'assistant_node' and id '97be84d4-4720-c710-0b7d-9c5066362a38'
+2025-10-22 12:58:58:__main__:INFO: Prompt: 
+2025-10-22 12:59:04:graph:INFO: Tool call detected: [{'name': 'tavily_search_results_json', 'args': {'query': 'how does gradio work'}, 'id': '6c63d9dd-b74f-4ebc-8c18-ed20c1ba3e94', 'type': 'tool_call'}]
+2025-10-22 12:59:22:langchain_google_genai.chat_models:WARNING: Retrying langchain_google_genai.chat_models._achat_with_retry.<locals>._achat_with_retry in 2.0 seconds as it raised ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 36.84088615s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 36
+}
+].
+2025-10-22 12:59:23:langchain_google_genai.chat_models:WARNING: Retrying langchain_google_genai.chat_models._achat_with_retry.<locals>._achat_with_retry in 2.0 seconds as it raised ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 35.977666928s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 35
+}
+].
+2025-10-22 12:59:57:__main__:INFO: Prompt: 
+2025-10-22 13:02:10:__main__:INFO: Prompt: 
+2025-10-22 13:02:27:__main__:ERROR: Exception occurred
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 107, in _wrapped_aiter
+    async for response in self._call:  # pragma: no branch
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 365, in _fetch_stream_responses
+    await self._raise_for_status()
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 273, in _raise_for_status
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "The model is overloaded. Please try again later."
+	debug_error_string = "UNKNOWN:Error received from peer ipv6:%5B2404:6800:4009:822::200a%5D:443 {grpc_message:"The model is overloaded. Please try again later.", grpc_status:14}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\app.py", line 74, in chat_fn
+    async for stream_mode, chunk in graph.astream(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2062, in astream
+    async for _ in runner.atick(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 527, in atick
+    _panic_or_proceed(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 619, in _panic_or_proceed
+    raise exc
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\retry.py", line 128, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 583, in ainvoke
+    input = await step.ainvoke(input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 371, in ainvoke
+    ret = await asyncio.create_task(coro, context=context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\graph.py", line 151, in assistant_node
+    response = await chain.ainvoke({"messages": state.messages}, config=config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 3066, in ainvoke
+    input = await asyncio.create_task(part(), context=context)  # type: ignore
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 5372, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 305, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 870, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 830, in agenerate
+    raise exceptions[0]
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 986, in _agenerate_with_cache
+    async for chunk in self._astream(messages, stop=stop, **kwargs):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_google_genai\chat_models.py", line 1123, in _astream
+    async for chunk in await _achat_with_retry(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 110, in _wrapped_aiter
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ServiceUnavailable: 503 The model is overloaded. Please try again later.
+During task with name 'assistant_node' and id 'eedd4bc0-865d-bb4f-63b4-c7d218f09826'
+2025-10-22 13:02:32:__main__:INFO: Prompt: 
+2025-10-22 13:02:48:graph:INFO: Tool call detected: [{'name': 'tavily_search_results_json', 'args': {'query': 'explain transformers to a beginner simple analogy'}, 'id': '0a393e22-21e5-4db5-ab51-d278b6541c55', 'type': 'tool_call'}]
+2025-10-22 13:03:26:__main__:INFO: Prompt: 
+2025-10-22 13:04:54:__main__:INFO: Prompt: 
+2025-10-22 13:05:05:graph:INFO: Tool call detected: [{'name': 'tavily_search_results_json', 'args': {'query': 'who is Donald Trump'}, 'id': '4bc3bc70-86f5-47b9-aa9c-358b2e73f513', 'type': 'tool_call'}]
+2025-10-22 13:05:18:langchain_google_genai.chat_models:WARNING: Retrying langchain_google_genai.chat_models._achat_with_retry.<locals>._achat_with_retry in 2.0 seconds as it raised ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 41.142884862s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 41
+}
+].
+2025-10-22 13:05:34:__main__:INFO: Prompt: You are a helpful assistant.
+2025-10-22 13:05:34:langchain_google_genai.chat_models:WARNING: Retrying langchain_google_genai.chat_models._achat_with_retry.<locals>._achat_with_retry in 2.0 seconds as it raised ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 24.941764624s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 24
+}
+].
+2025-10-22 13:05:36:__main__:ERROR: Exception occurred
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 107, in _wrapped_aiter
+    async for response in self._call:  # pragma: no branch
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 365, in _fetch_stream_responses
+    await self._raise_for_status()
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 273, in _raise_for_status
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.RESOURCE_EXHAUSTED
+	details = "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 22.740186788s."
+	debug_error_string = "UNKNOWN:Error received from peer ipv6:%5B2404:6800:4009:822::200a%5D:443 {grpc_status:8, grpc_message:"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2\nPlease retry in 22.740186788s."}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\app.py", line 74, in chat_fn
+    async for stream_mode, chunk in graph.astream(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2062, in astream
+    async for _ in runner.atick(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 527, in atick
+    _panic_or_proceed(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 619, in _panic_or_proceed
+    raise exc
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\retry.py", line 128, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 583, in ainvoke
+    input = await step.ainvoke(input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 371, in ainvoke
+    ret = await asyncio.create_task(coro, context=context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\graph.py", line 151, in assistant_node
+    response = await chain.ainvoke({"messages": state.messages}, config=config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 3066, in ainvoke
+    input = await asyncio.create_task(part(), context=context)  # type: ignore
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 5372, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 305, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 870, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 830, in agenerate
+    raise exceptions[0]
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 986, in _agenerate_with_cache
+    async for chunk in self._astream(messages, stop=stop, **kwargs):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_google_genai\chat_models.py", line 1123, in _astream
+    async for chunk in await _achat_with_retry(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 110, in _wrapped_aiter
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 22.740186788s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 22
+}
+]
+During task with name 'assistant_node' and id '8bf6cb75-1884-5ebf-5fad-ee3a668e5bc8'
+2025-10-22 13:05:40:__main__:INFO: Prompt: You are a helpful assistant.
+2025-10-22 13:05:45:__main__:ERROR: Exception occurred
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 107, in _wrapped_aiter
+    async for response in self._call:  # pragma: no branch
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 365, in _fetch_stream_responses
+    await self._raise_for_status()
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 273, in _raise_for_status
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.RESOURCE_EXHAUSTED
+	details = "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 14.032052929s."
+	debug_error_string = "UNKNOWN:Error received from peer ipv6:%5B2404:6800:4009:822::200a%5D:443 {grpc_message:"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2\nPlease retry in 14.032052929s.", grpc_status:8}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\app.py", line 74, in chat_fn
+    async for stream_mode, chunk in graph.astream(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2062, in astream
+    async for _ in runner.atick(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 527, in atick
+    _panic_or_proceed(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 619, in _panic_or_proceed
+    raise exc
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\retry.py", line 128, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 583, in ainvoke
+    input = await step.ainvoke(input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 371, in ainvoke
+    ret = await asyncio.create_task(coro, context=context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\graph.py", line 151, in assistant_node
+    response = await chain.ainvoke({"messages": state.messages}, config=config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 3066, in ainvoke
+    input = await asyncio.create_task(part(), context=context)  # type: ignore
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 5372, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 305, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 870, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 830, in agenerate
+    raise exceptions[0]
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 986, in _agenerate_with_cache
+    async for chunk in self._astream(messages, stop=stop, **kwargs):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_google_genai\chat_models.py", line 1123, in _astream
+    async for chunk in await _achat_with_retry(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 110, in _wrapped_aiter
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 14.032052929s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 14
+}
+]
+During task with name 'assistant_node' and id '1d85390d-c6cd-1b83-405b-f0fe9be7cda6'
+2025-10-22 13:05:51:__main__:INFO: Prompt: You are a helpful assistant.
+2025-10-22 13:05:51:langchain_google_genai.chat_models:WARNING: Retrying langchain_google_genai.chat_models._achat_with_retry.<locals>._achat_with_retry in 2.0 seconds as it raised ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 7.874515005s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 7
+}
+].
+2025-10-22 13:05:53:__main__:ERROR: Exception occurred
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 107, in _wrapped_aiter
+    async for response in self._call:  # pragma: no branch
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 365, in _fetch_stream_responses
+    await self._raise_for_status()
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 273, in _raise_for_status
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.RESOURCE_EXHAUSTED
+	details = "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 5.7113767s."
+	debug_error_string = "UNKNOWN:Error received from peer ipv6:%5B2404:6800:4009:822::200a%5D:443 {grpc_status:8, grpc_message:"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2\nPlease retry in 5.7113767s."}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\app.py", line 74, in chat_fn
+    async for stream_mode, chunk in graph.astream(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2062, in astream
+    async for _ in runner.atick(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 527, in atick
+    _panic_or_proceed(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 619, in _panic_or_proceed
+    raise exc
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\retry.py", line 128, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 583, in ainvoke
+    input = await step.ainvoke(input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 371, in ainvoke
+    ret = await asyncio.create_task(coro, context=context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\graph.py", line 151, in assistant_node
+    response = await chain.ainvoke({"messages": state.messages}, config=config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 3066, in ainvoke
+    input = await asyncio.create_task(part(), context=context)  # type: ignore
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 5372, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 305, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 870, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 830, in agenerate
+    raise exceptions[0]
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 986, in _agenerate_with_cache
+    async for chunk in self._astream(messages, stop=stop, **kwargs):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_google_genai\chat_models.py", line 1123, in _astream
+    async for chunk in await _achat_with_retry(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 110, in _wrapped_aiter
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 5.7113767s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 5
+}
+]
+During task with name 'assistant_node' and id '93b3aa46-3edf-e9b7-7647-7ff2b2e3c2b6'
+2025-10-22 13:05:59:__main__:INFO: Prompt: You are a helpful assistant.
+2025-10-22 13:05:59:__main__:ERROR: Exception occurred
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 107, in _wrapped_aiter
+    async for response in self._call:  # pragma: no branch
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 365, in _fetch_stream_responses
+    await self._raise_for_status()
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 273, in _raise_for_status
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.RESOURCE_EXHAUSTED
+	details = "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 59.730769425s."
+	debug_error_string = "UNKNOWN:Error received from peer ipv6:%5B2404:6800:4009:822::200a%5D:443 {grpc_message:"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2\nPlease retry in 59.730769425s.", grpc_status:8}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\app.py", line 74, in chat_fn
+    async for stream_mode, chunk in graph.astream(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2062, in astream
+    async for _ in runner.atick(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 527, in atick
+    _panic_or_proceed(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 619, in _panic_or_proceed
+    raise exc
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\retry.py", line 128, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 583, in ainvoke
+    input = await step.ainvoke(input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 371, in ainvoke
+    ret = await asyncio.create_task(coro, context=context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\graph.py", line 151, in assistant_node
+    response = await chain.ainvoke({"messages": state.messages}, config=config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 3066, in ainvoke
+    input = await asyncio.create_task(part(), context=context)  # type: ignore
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 5372, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 305, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 870, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 830, in agenerate
+    raise exceptions[0]
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 986, in _agenerate_with_cache
+    async for chunk in self._astream(messages, stop=stop, **kwargs):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_google_genai\chat_models.py", line 1123, in _astream
+    async for chunk in await _achat_with_retry(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 110, in _wrapped_aiter
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 59.730769425s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 59
+}
+]
+During task with name 'assistant_node' and id '4a316de8-fefa-effd-e924-407694247529'
+2025-10-22 13:06:00:__main__:INFO: Prompt: You are a helpful assistant.
+2025-10-22 13:06:01:langchain_google_genai.chat_models:WARNING: Retrying langchain_google_genai.chat_models._achat_with_retry.<locals>._achat_with_retry in 2.0 seconds as it raised ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 57.793175246s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 57
+}
+].
+2025-10-22 13:06:03:__main__:ERROR: Exception occurred
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 107, in _wrapped_aiter
+    async for response in self._call:  # pragma: no branch
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 365, in _fetch_stream_responses
+    await self._raise_for_status()
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\grpc\aio\_call.py", line 273, in _raise_for_status
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.RESOURCE_EXHAUSTED
+	details = "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 55.596978821s."
+	debug_error_string = "UNKNOWN:Error received from peer ipv6:%5B2404:6800:4009:822::200a%5D:443 {grpc_message:"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2\nPlease retry in 55.596978821s.", grpc_status:8}"
+>
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\app.py", line 74, in chat_fn
+    async for stream_mode, chunk in graph.astream(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2062, in astream
+    async for _ in runner.atick(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 527, in atick
+    _panic_or_proceed(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\runner.py", line 619, in _panic_or_proceed
+    raise exc
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\pregel\retry.py", line 128, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 583, in ainvoke
+    input = await step.ainvoke(input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langgraph\utils\runnable.py", line 371, in ainvoke
+    ret = await asyncio.create_task(coro, context=context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\graph.py", line 151, in assistant_node
+    response = await chain.ainvoke({"messages": state.messages}, config=config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 3066, in ainvoke
+    input = await asyncio.create_task(part(), context=context)  # type: ignore
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 5372, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 305, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 870, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 830, in agenerate
+    raise exceptions[0]
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 986, in _agenerate_with_cache
+    async for chunk in self._astream(messages, stop=stop, **kwargs):
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\langchain_google_genai\chat_models.py", line 1123, in _astream
+    async for chunk in await _achat_with_retry(
+  File "C:\Users\Msi\Downloads\gradio-langgraph-template\.venv\Lib\site-packages\google\api_core\grpc_helpers_async.py", line 110, in _wrapped_aiter
+    raise exceptions.from_grpc_error(rpc_error) from rpc_error
+google.api_core.exceptions.ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 2
+Please retry in 55.596978821s. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-2.5-pro"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 2
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 55
+}
+]
+During task with name 'assistant_node' and id '60d3f7b4-c813-1aa1-2536-17b506f0294e'
+2025-10-22 13:06:48:__main__:INFO: Starting the interface
+2025-10-22 13:06:49:httpx:INFO: HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-10-22 13:06:49:httpx:INFO: HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-10-22 13:06:50:httpx:INFO: HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-10-22 13:06:50:httpx:INFO: HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-10-22 13:07:18:__main__:INFO: Starting the interface
+2025-10-22 13:07:19:httpx:INFO: HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-10-22 13:07:19:httpx:INFO: HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-10-22 13:07:20:httpx:INFO: HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-10-22 13:07:20:httpx:INFO: HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
