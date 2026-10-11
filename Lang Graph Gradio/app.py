@@ -3,6 +3,7 @@
 import os
 import logging
 import logging.config
+from pathlib import Path
 from typing import Any
 from uuid import uuid4, UUID
 import json
@@ -25,7 +26,7 @@ USER_INPUT_MAX_LENGTH = 10000  # Characters
 # Set a stable value in .env to preserve browser state across server restarts.
 BROWSER_STORAGE_SECRET = os.getenv("GRADIO_BROWSER_STORAGE_SECRET")
 
-with open('logging-config.json', 'r') as fh:
+with open(Path(__file__).with_name("logging-config.json"), "r", encoding="utf-8") as fh:
     config = json.load(fh)
 logging.config.dictConfig(config)
 logger = logging.getLogger(__name__)
@@ -206,7 +207,7 @@ def switch_tab(selected_uuid, tabs, gradio_graph, uuid, messages, prompt):
 
     if selected_uuid not in tabs:
         logger.error(f"Could not find the selected tab in offloaded_tabs_data_storage {selected_uuid}")
-        return gr.skip(), gr.skip(), gr.skip(), gr.skip()
+        return tuple(gr.skip() for _ in range(5 + FOLLOWUP_QUESTION_NUMBER))
     selected_tab_state = tabs[selected_uuid]
     selected_graph = selected_tab_state["graph"]
     selected_messages = selected_tab_state["messages"]
