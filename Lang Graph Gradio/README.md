@@ -8,8 +8,9 @@ The template features history for the LLM, a couple tool calls, streaming output
 
     pip install uv
 
-Add your Google Gemini API key to `.env` as `GOOGLE_API_KEY`.
-Optionally add tavily key for websearch
+Add your Groq API key to `.env` as `GROQ_API_KEY`.
+The default model is `openai/gpt-oss-20b`; optionally set `GROQ_MODEL` to another model enabled for your Groq account.
+DuckDuckGo web search is available without an API key.
 Set `GRADIO_BROWSER_STORAGE_SECRET` in `.env` to a stable random value to preserve browser state across server restarts.
 
 # Run

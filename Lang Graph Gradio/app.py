@@ -51,7 +51,7 @@ async def chat_fn(user_input: str, history: dict, input_graph_state: dict, uuid:
         logger.info(f"Prompt: {prompt}")
         input_graph_state["tools_enabled"] = {
             "download_website_text": download_website_text_enabled,
-            "tavily_search_results_json": search_enabled,
+            "duckduckgo_search": search_enabled,
         }
         if prompt:
             input_graph_state["prompt"] = prompt
@@ -82,7 +82,7 @@ async def chat_fn(user_input: str, history: dict, input_graph_state: dict, uuid:
                 if hasattr(last_message, "tool_calls"):
                     for msg_tool_call in last_message.tool_calls:
                         tool_name: str = msg_tool_call['name']
-                        if tool_name == "tavily_search_results_json":
+                        if tool_name == "duckduckgo_search":
                             query = msg_tool_call['args']['query']
                             waiting_output_seq.append(f"Searching for '{query}'...")
                             yield "\n".join(waiting_output_seq), gr.skip(), gr.skip()

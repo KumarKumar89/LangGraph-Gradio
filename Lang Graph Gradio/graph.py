@@ -1,26 +1,28 @@
+import asyncio
+import json
 import logging
 import os
 from typing import Annotated
 
 import aiohttp
+from ddgs import DDGS
 from langchain_core.messages import AnyMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tools import tool
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import ToolNode
 from langgraph.graph import StateGraph, END, add_messages
-from langchain_community.tools import TavilySearchResults
 from pydantic import BaseModel, Field
 from trafilatura import extract
 
 logger = logging.getLogger(__name__)
 ASSISTANT_SYSTEM_PROMPT_BASE = "You are a helpful assistant."
 
-search_enabled = bool(os.environ.get("TAVILY_API_KEY"))
-google_api_key = os.getenv("GOOGLE_API_KEY")
-if not google_api_key:
-    raise RuntimeError("GOOGLE_API_KEY is required. Add it to .env before starting the app.")
+search_enabled = True
+groq_api_key = os.getenv("GROQ_API_KEY")
+if not groq_api_key:
+    raise RuntimeError("GROQ_API_KEY is required. Add it to .env before starting the app.")
 
 @tool
 async def download_website_text(url: str) -> str:
@@ -42,26 +44,27 @@ async def download_website_text(url: str) -> str:
         logger.error(f"Failed to download {url}: {str(e)}")
         return f"Error retrieving website content: {str(e)}"
 
-tools = [download_website_text]
+@tool
+async def duckduckgo_search(query: str) -> str:
+    """Search the web with DuckDuckGo."""
+    def search():
+        with DDGS() as ddgs:
+            return list(ddgs.text(query, max_results=5))
 
-if search_enabled:
-    tavily_search_tool = TavilySearchResults(
-        max_results=5,
-        search_depth="advanced",
-        include_answer=True,
-        include_raw_content=True,
-    )
-    tools.append(tavily_search_tool)
-else:
-    print("TAVILY_API_KEY environment variable not found. Websearch disabled")
+    try:
+        results = await asyncio.to_thread(search)
+        return json.dumps(results, ensure_ascii=False)
+    except Exception as e:
+        logger.exception("DuckDuckGo search failed")
+        return f"DuckDuckGo search failed: {e}"
 
-weak_model = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
+tools = [download_website_text, duckduckgo_search]
+
+weak_model = ChatGroq(
+    model=os.getenv("GROQ_MODEL", "openai/gpt-oss-20b"),
     temperature=0,
-    max_output_tokens=1024,
-    top_p=0.95,
-    top_k=40,
-    api_key=google_api_key,
+    max_tokens=1024,
+    api_key=groq_api_key,
 )
 model = weak_model
 assistant_model = weak_model
@@ -76,8 +79,8 @@ async def assistant_node(state: GraphProcessingState, config=None):
     assistant_tools = []
     if state.tools_enabled.get("download_website_text", True):
         assistant_tools.append(download_website_text)
-    if search_enabled and state.tools_enabled.get("tavily_search_results_json", True):
-        assistant_tools.append(tavily_search_tool)
+    if search_enabled and state.tools_enabled.get("duckduckgo_search", True):
+        assistant_tools.append(duckduckgo_search)
     assistant_model = model.bind_tools(assistant_tools)
     if state.prompt:
         final_prompt = "\n".join([state.prompt, ASSISTANT_SYSTEM_PROMPT_BASE])
