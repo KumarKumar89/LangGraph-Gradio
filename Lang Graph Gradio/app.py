@@ -22,9 +22,8 @@ FOLLOWUP_QUESTION_NUMBER = 3
 TRIM_MESSAGE_LENGTH = 16  # Includes tool messages
 USER_INPUT_MAX_LENGTH = 10000  # Characters
 
-# We need the same secret for data persistance
-# If you store sensitive data, you should store your secret in .env
-BROWSER_STORAGE_SECRET = "itsnosecret"
+# Set a stable value in .env to preserve browser state across server restarts.
+BROWSER_STORAGE_SECRET = os.getenv("GRADIO_BROWSER_STORAGE_SECRET")
 
 with open('logging-config.json', 'r') as fh:
     config = json.load(fh)
@@ -117,7 +116,7 @@ class FollowupQuestions(BaseModel):
     """Model for langchain to use for structured output for followup questions"""
     questions: list[str]
 
-async def populate_followup_questions(end_of_chat_response: bool, messages: dict[str, str], uuid: UUID):
+async def populate_followup_questions(end_of_chat_response: bool, messages: list[dict[str, str]], uuid: UUID):
     """
     This function gets called a lot due to the asynchronous nature of streaming
 
@@ -143,7 +142,7 @@ async def populate_followup_questions(end_of_chat_response: bool, messages: dict
         )
     return *buttons, False
 
-async def summarize_chat(end_of_chat_response: bool, messages: dict, sidebar_summaries: dict, uuid: UUID):
+async def summarize_chat(end_of_chat_response: bool, messages: list[dict[str, str]], sidebar_summaries: dict, uuid: UUID):
     """Summarize chat for tab names"""
     # print("\n------------------------")
     # print("not end_of_chat_response", not end_of_chat_response)

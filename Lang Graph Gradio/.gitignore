@@ -1,0 +1,6 @@
+.env
+uv.lock
+.idea
+.python-version
+__pycache__
+*.log

@@ -66,6 +66,9 @@ logger = logging.getLogger(__name__)
 ASSISTANT_SYSTEM_PROMPT_BASE = "You are a helpful assistant."
 
 search_enabled = bool(os.environ.get("TAVILY_API_KEY"))
+google_api_key = os.getenv("GOOGLE_API_KEY")
+if not google_api_key:
+    raise RuntimeError("GOOGLE_API_KEY is required. Add it to .env before starting the app.")
 
 @tool
 async def download_website_text(url: str) -> str:
@@ -102,13 +105,13 @@ else:
 
 # ✅ Using Gemini-2.5-Pro via LangChain Google GenAI wrapper
 weak_model = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",  # specify Gemini model
+    model="gemini-2.5-flash",
     temperature=0,
     max_output_tokens=1024,
     top_p=0.95,
     top_k=40,
     tools=tools,
-    api_key="AIzaSyCXOoMV3kSj58_wrplLo_z9LtddCsKpbvE",  # set your Google API key
+    api_key=google_api_key,
 )
 
 # You can now use assistant_model in your workflow
