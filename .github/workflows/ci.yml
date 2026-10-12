@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Lang Graph Gradio/**"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "Lang Graph Gradio/**"
+      - ".github/workflows/ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      GROQ_API_KEY: test-key
+      GROQ_MODEL: openai/gpt-oss-20b
+      GRADIO_SERVER_PORT: 7860
+    defaults:
+      run:
+        working-directory: Lang Graph Gradio
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: Lang Graph Gradio/uv.lock
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Check Python syntax
+        run: uv run python -m py_compile app.py graph.py
+
+      - name: Smoke test app import
+        run: |
+          uv run python - <<'PY'
+          import os
+          os.environ['GROQ_API_KEY'] = 'test-key'
+          import app
+          print('Smoke import OK:', hasattr(app, 'chat_fn'))
+          PY
+
+      - name: Run tests when present
+        shell: bash
+        run: |
+          if find . -type f \( -name 'test_*.py' -o -name '*_test.py' \) \
+            -not -path './.venv/*' -print -quit | grep -q .; then
+            uv run --with pytest pytest
+          else
+            echo "No pytest test files found; skipping pytest."
+          fi
