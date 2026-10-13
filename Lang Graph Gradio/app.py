@@ -665,45 +665,53 @@ if __name__ == "__main__":
     server_name = os.getenv("GRADIO_SERVER_NAME", "127.0.0.1")
     root_path = os.getenv("GRADIO_ROOT_PATH", "")
 
-    if RATE_LIMIT_ENABLED:
-        from fastapi.responses import JSONResponse
-        from starlette.middleware.base import BaseHTTPMiddleware
-        from gradio.routes import App
+    # Health check endpoint + rate limiting are injected into the FastAPI app
+    # that Gradio builds inside launch().
+    from fastapi.responses import JSONResponse
+    from starlette.middleware.base import BaseHTTPMiddleware
+    from gradio.routes import App
 
-        class _RateLimitMiddleware(BaseHTTPMiddleware):
-            async def dispatch(self, request, call_next):
-                # Only guard the endpoints that hit the LLM; static assets and
-                # the initial page load must stay fast for everyone.
-                path = request.url.path
-                guarded = (
-                    request.method in {"POST", "PUT"}
-                    and ("/call" in path or "/queue/" in path or "/predict" in path)
+    class _RateLimitMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request, call_next):
+            # Only guard the endpoints that hit the LLM; static assets and
+            # the initial page load must stay fast for everyone.
+            path = request.url.path
+            guarded = (
+                request.method in {"POST", "PUT"}
+                and ("/call" in path or "/queue/" in path or "/predict" in path)
+            )
+            if guarded and not rate_limiter.allow(client_key_from_request(request)):
+                return JSONResponse(
+                    {"error": "Rate limit exceeded. Please slow down."},
+                    status_code=429,
                 )
-                if guarded and not rate_limiter.allow(client_key_from_request(request)):
-                    return JSONResponse(
-                        {"error": "Rate limit exceeded. Please slow down."},
-                        status_code=429,
-                    )
-                return await call_next(request)
+            return await call_next(request)
 
-        # Gradio builds its FastAPI app inside launch(); inject our middleware
-        # right after the app object is created.
-        original_create_app = App.create_app.__func__
+    # Gradio builds its FastAPI app inside launch(); inject our health route
+    # and middleware right after the app object is created.
+    # (In gradio 5.x, App.create_app is a plain function accessed on the class.)
+    original_create_app = App.__dict__["create_app"]
 
-        @classmethod
-        def _create_app_with_rate_limiting(cls, *args, **kwargs):
-            fastapi_app = original_create_app(cls, *args, **kwargs)
-            try:
+    def _create_app_with_production_routes(*args, **kwargs):
+        fastapi_app = original_create_app(*args, **kwargs)
+        try:
+            # Unauthenticated health endpoint used by container probes and CI/CD
+            # smoke tests after deployment.
+            @fastapi_app.get("/healthz", include_in_schema=False)
+            def healthz():
+                return {"status": "ok"}
+
+            if RATE_LIMIT_ENABLED:
                 fastapi_app.add_middleware(_RateLimitMiddleware)
                 logger.info(
                     "Edge rate limiting active: %s requests/min per client",
                     RATE_LIMIT_PER_MINUTE,
                 )
-            except Exception:
-                logger.exception("Failed to add rate limiting middleware")
-            return fastapi_app
+        except Exception:
+            logger.exception("Failed to add production routes/middleware")
+        return fastapi_app
 
-        App.create_app = _create_app_with_rate_limiting
+    App.create_app = staticmethod(_create_app_with_production_routes)
 
     app.launch(
         server_name=server_name,

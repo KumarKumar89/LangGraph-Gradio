@@ -13,6 +13,11 @@ permissions:
   contents: write
   packages: write
 
+# Serialize deployments so two pushes never deploy concurrently.
+concurrency:
+  group: deploy-langgraph-gradio
+  cancel-in-progress: false
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -65,29 +70,58 @@ jobs:
         shell: bash
         env:
           IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/langgraph-gradio:${{ github.sha }}
+          APP_NAME: ${{ secrets.AZURE_CONTAINER_APP_NAME }}
+          RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
         run: |
+          # Env vars shared by create/update; sized for thousands of users.
+          SCALE_ENV="--min-replicas 2 --max-replicas 10"
+          COMMON_ENV_VARS=(
+            GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}"
+            GROQ_MODEL="${{ secrets.GROQ_MODEL || 'openai/gpt-oss-20b' }}"
+            GRADIO_SERVER_PORT="7860"
+            GRADIO_SERVER_NAME="0.0.0.0"
+            GRADIO_BROWSER_STORAGE_SECRET="${{ secrets.GRADIO_BROWSER_STORAGE_SECRET }}"
+            CHAT_CONCURRENCY_LIMIT="32"
+            QUEUE_MAX_SIZE="1000"
+            RATE_LIMIT_PER_MINUTE="150"
+          )
+
           APP_EXISTS=$(az containerapp show \
-            --name "${{ secrets.AZURE_CONTAINER_APP_NAME }}" \
-            --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
+            --name "$APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
             --query "name" \
             -o tsv 2>/dev/null || true)
 
           if [ -n "$APP_EXISTS" ]; then
-            echo "Container App exists; updating image and env vars..."
+            echo "Container App exists; updating image, scale and env vars..."
             az containerapp update \
-              --name "${{ secrets.AZURE_CONTAINER_APP_NAME }}" \
-              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
+              --name "$APP_NAME" \
+              --resource-group "$RESOURCE_GROUP" \
               --image "$IMAGE_NAME" \
-              --set-env-vars \
-                GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
-                GROQ_MODEL="${{ secrets.GROQ_MODEL || 'openai/gpt-oss-20b' }}" \
-                GRADIO_SERVER_PORT="7860" \
-                GRADIO_BROWSER_STORAGE_SECRET="${{ secrets.GRADIO_BROWSER_STORAGE_SECRET }}"
+              --min-replicas 2 \
+              --max-replicas 10 \
+              --cpu 1.0 \
+              --memory 2.0Gi \
+              --set-env-vars "${COMMON_ENV_VARS[@]}" \
+              --args ""
+            # Configure liveness/readiness probes on /healthz (port 7860)
+            az containerapp probe update \
+              --name "$APP_NAME" \
+              --resource-group "$RESOURCE_GROUP" \
+              --liveness-probe-path /healthz \
+              --liveness-probe-interval 30 \
+              --liveness-probe-timeout 5 \
+              --liveness-fail-threshold 3 \
+              --readiness-probe-path /healthz \
+              --readiness-probe-interval 10 \
+              --readiness-probe-timeout 5 \
+              --readiness-fail-threshold 3 || \
+              echo "::warning::probe update failed; continuing"
           else
             echo "Container App does not exist; creating a new one..."
             az containerapp create \
-              --name "${{ secrets.AZURE_CONTAINER_APP_NAME }}" \
-              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
+              --name "$APP_NAME" \
+              --resource-group "$RESOURCE_GROUP" \
               --environment "${{ secrets.AZURE_CONTAINERAPP_ENVIRONMENT }}" \
               --image "$IMAGE_NAME" \
               --target-port 7860 \
@@ -95,16 +129,67 @@ jobs:
               --registry-server ghcr.io \
               --registry-username "${{ github.actor }}" \
               --registry-password "${{ secrets.GITHUB_TOKEN }}" \
-              --cpu 0.5 \
-              --memory 1.0Gi \
-              --min-replicas 1 \
-              --max-replicas 2 \
-              --env-vars \
-                GROQ_API_KEY="${{ secrets.GROQ_API_KEY }}" \
-                GROQ_MODEL="${{ secrets.GROQ_MODEL || 'openai/gpt-oss-20b' }}" \
-                GRADIO_SERVER_PORT="7860" \
-                GRADIO_BROWSER_STORAGE_SECRET="${{ secrets.GRADIO_BROWSER_STORAGE_SECRET }}"
+              --cpu 1.0 \
+              --memory 2.0Gi \
+              --min-replicas 2 \
+              --max-replicas 10 \
+              --env-vars "${COMMON_ENV_VARS[@]}" \
+              --liveness-probe-path /healthz \
+              --liveness-probe-interval 30 \
+              --readiness-probe-path /healthz \
+              --readiness-probe-interval 10
           fi
+
+      - name: Wait for deployment to stabilize
+        shell: bash
+        run: |
+          APP_NAME="${{ secrets.AZURE_CONTAINER_APP_NAME }}"
+          RESOURCE_GROUP="${{ secrets.AZURE_RESOURCE_GROUP }}"
+          for i in $(seq 1 40); do
+            STATUS=$(az containerapp revision list \
+              --name "$APP_NAME" \
+              --resource-group "$RESOURCE_GROUP" \
+              --query "[?properties.active==true].properties.healthCheckResult" -o tsv)
+            echo "Attempt ${i}: healthCheckResult=${STATUS}"
+            case "$STATUS" in
+              *Succeeded*|*Success*) echo "Revision healthy"; exit 0 ;;
+              *Failed*|*Unhealthy*) echo "::error::New revision unhealthy"; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "::error::Deployment did not stabilize in time"; exit 1
+
+      - name: Post-deploy smoke test (public URL)
+        shell: bash
+        run: |
+          FQDN=$(az containerapp show \
+            --name "${{ secrets.AZURE_CONTAINER_APP_NAME }}" \
+            --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
+            --query properties.configuration.ingress.fqdn -o tsv)
+          echo "Testing https://$FQDN"
+          for i in $(seq 1 20); do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://$FQDN/healthz" || true)
+            if [ "$CODE" = "200" ]; then echo "Health endpoint OK"; break; fi
+            if [ "$i" = "20" ]; then echo "::error::Public health check failed (last code: $CODE)"; exit 1; fi
+            sleep 10
+          done
+          curl -s -o /dev/null -w "UI status: %{http_code}\n" "https://$FQDN/"
+          echo "LIVE_URL=https://$FQDN" >> "$GITHUB_ENV"
+
+      - name: Roll back on failure
+        if: failure()
+        shell: bash
+        continue-on-error: true
+        run: |
+          echo "Deploy job failed; attempting rollback to previous healthy revision..."
+          az containerapp revision activate \
+            --name "${{ secrets.AZURE_CONTAINER_APP_NAME }}" \
+            --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
+            --revision "$(az containerapp revision list \
+              --name "${{ secrets.AZURE_CONTAINER_APP_NAME }}" \
+              --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
+              --query '[?properties.healthCheckResult==`Succeeded`].name | [-2]' -o tsv)" || \
+            echo "::warning::Automatic rollback could not complete; manual intervention may be required"
 
       - name: Show live URL
         run: |

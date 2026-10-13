@@ -30,7 +30,23 @@ A chatbot built with LangGraph and Gradio is a real product feature, not just a 
 - protected from secret leakage
 - easy to roll back if a model or UI change breaks the user flow
 
-The CI workflow checks code quality, Python syntax, dependency installation, and smoke-import validation before merging changes. The CD workflow builds a container image and can deploy it to Azure Container Apps when the required cloud secrets are configured.
+The CI workflow checks code quality, Python syntax, dependency installation, and smoke-import validation before merging changes. It also **builds the production Docker image and runs it end-to-end**, verifying `/healthz`, the UI (`/`), and `/config` respond correctly — so nothing broken ever reaches the cloud.
+
+The CD workflow builds a container image, pushes it to GitHub Container Registry (free for public repos), and deploys it to Azure Container Apps when the required cloud secrets are configured. Deployments are serialized (concurrency group), auto-scaled (**2–10 replicas**, 1 CPU / 2 GiB each → capacity for thousands of concurrent users), validated with liveness/readiness probes on `/healthz`, smoke-tested against the live public URL after rollout, and **automatically rolled back** to the last healthy revision if any check fails.
+
+## Scaling for thousands of users
+
+The deployed app is tuned through environment variables (set automatically by the CD workflow):
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `CHAT_CONCURRENCY_LIMIT` | 32 | Simultaneous in-flight chat requests per replica |
+| `QUEUE_MAX_SIZE` | 1000 | Pending requests queued per replica before rejecting |
+| `GRADIO_MAX_THREADS` | 64 | ASGI worker threads per replica |
+| `RATE_LIMIT_ENABLED` / `RATE_LIMIT_PER_MINUTE` | true / 150 | Per-client sliding-window rate limiting (HTTP 429) |
+| `GRADIO_SERVER_NAME` | 0.0.0.0 (container) | Correct binding inside cloud containers |
+
+With 10 replicas × 32 concurrent chats, the service handles ~320 simultaneous conversations plus queueing bursts, while rate limiting protects the Groq API quota from abuse.
 
 ## Real-world problem scenario
 
