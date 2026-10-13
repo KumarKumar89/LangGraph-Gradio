@@ -3,10 +3,12 @@
 import os
 import logging
 import logging.config
+from collections import deque
 from pathlib import Path
 from typing import Any
 from uuid import uuid4, UUID
 import json
+import time
 
 import gradio as gr
 from dotenv import load_dotenv
@@ -23,11 +25,104 @@ FOLLOWUP_QUESTION_NUMBER = 3
 TRIM_MESSAGE_LENGTH = 16  # Includes tool messages
 USER_INPUT_MAX_LENGTH = 10000  # Characters
 
+
+def _env_int(name: str, default: int) -> int:
+    """Read an integer environment variable with a safe fallback."""
+    try:
+        return int(os.getenv(name, default))
+    except (TypeError, ValueError):
+        return default
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    """Read a boolean environment variable ('1'/'true'/'yes'/'on')."""
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+# --- Scaling knobs (tune these via env vars when serving thousands of users) ---
+# Max simultaneous in-flight chat requests per replica. Additional requests are
+# queued by Gradio instead of being rejected.
+CHAT_CONCURRENCY_LIMIT = _env_int("CHAT_CONCURRENCY_LIMIT", 32)
+# Global queue size per replica; requests beyond this get a "queue full" error.
+QUEUE_MAX_SIZE = _env_int("QUEUE_MAX_SIZE", 1000)
+# Enable the public /api endpoint so the bot can be embedded/automated.
+API_ENABLE = _env_bool("API_ENABLE", True)
+# Optional simple rate limiting for the public deployment (per client IP,
+# in-memory sliding window). Set RATE_LIMIT_ENABLED=false to disable.
+RATE_LIMIT_ENABLED = _env_bool("RATE_LIMIT_ENABLED", True)
+RATE_LIMIT_PER_MINUTE = _env_int("RATE_LIMIT_PER_MINUTE", 150)
+
+
+class SlidingWindowRateLimiter:
+    """Small in-memory per-client rate limiter (sliding window)."""
+
+    def __init__(self, max_per_minute: int):
+        self.max_per_minute = max(1, max_per_minute)
+        self._hits: dict[str, deque[float]] = {}
+
+    def allow(self, key: str) -> bool:
+        now = time.monotonic()
+        window = self._hits.setdefault(key, deque())
+        while window and now - window[0] >= 60.0:
+            window.popleft()
+        if len(window) >= self.max_per_minute:
+            return False
+        window.append(now)
+        # Prevent unbounded memory growth from many distinct clients.
+        if len(self._hits) > 10_000:
+            stale = [
+                k for k, dq in self._hits.items() if not dq or now - dq[-1] >= 120.0
+            ]
+            for k in stale:
+                self._hits.pop(k, None)
+        return True
+
+
+rate_limiter = SlidingWindowRateLimiter(RATE_LIMIT_PER_MINUTE)
+
+
+def client_key_from_request(request) -> str:
+    """Best-effort client identity: first hop of X-Forwarded-For, else socket."""
+    try:
+        xff = request.headers.get("x-forwarded-for", "")
+        if xff:
+            return xff.split(",")[0].strip()
+        host = request.client.host if request.client is not None else None
+        if host:
+            return host
+    except Exception:
+        logger.exception("Could not determine client key; using 'unknown'")
+    return "unknown"
+
 # Set a stable value in .env to preserve browser state across server restarts.
 BROWSER_STORAGE_SECRET = os.getenv("GRADIO_BROWSER_STORAGE_SECRET")
 
-with open(Path(__file__).with_name("logging-config.json"), "r", encoding="utf-8") as fh:
-    config = json.load(fh)
+LOGGING_CONFIG_PATH = Path(__file__).with_name("logging-config.json")
+if LOGGING_CONFIG_PATH.exists():
+    with open(LOGGING_CONFIG_PATH, "r", encoding="utf-8") as fh:
+        config = json.load(fh)
+else:  # Fallback so the app still starts without the file (e.g. slim images).
+    config = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "%(asctime)s:%(name)s:%(levelname)s: %(message)s",
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+            }
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "level": "INFO",
+                "formatter": "verbose",
+            }
+        },
+        "root": {"level": "INFO", "handlers": ["console"]},
+    }
 logging.config.dictConfig(config)
 logger = logging.getLogger(__name__)
 
@@ -49,6 +144,9 @@ async def chat_fn(user_input: str, history: dict, input_graph_state: dict, uuid:
     """
     try:
         logger.info(f"Prompt: {prompt}")
+        if not user_input or not user_input.strip():
+            yield "Please enter a message.", gr.skip(), False
+            return
         input_graph_state["tools_enabled"] = {
             "download_website_text": download_website_text_enabled,
             "duckduckgo_search": search_enabled,
@@ -276,7 +374,11 @@ function triggerChatButtonClick() {
 
 if __name__ == "__main__":
     logger.info("Starting the interface")
-    with gr.Blocks(title="Langgraph Template", fill_height=True, css=CSS) as app:
+    with gr.Blocks(
+        title="Langgraph Template",
+        fill_height=True,
+        css=CSS,
+    ) as app:
         current_prompt_state = gr.BrowserState(
             storage_key="current_prompt_state",
             secret=BROWSER_STORAGE_SECRET,
@@ -475,6 +577,8 @@ if __name__ == "__main__":
             type="messages",
             multimodal=multimodal,
             textbox=textbox,
+            # Allow many simultaneous chats per replica; extra requests queue.
+            concurrency_limit=CHAT_CONCURRENCY_LIMIT,
         )
 
         new_chat_button.click(
@@ -553,8 +657,60 @@ if __name__ == "__main__":
         def load_prompt(current_prompt):
             return current_prompt
 
+    # Production tuning: enable the request queue with a large capacity and
+    # configure concurrency for the auxiliary LLM functions (follow-up
+    # questions / summaries) so slow calls don't block other users.
+    app.queue(default_concurrency_limit=CHAT_CONCURRENCY_LIMIT, max_size=QUEUE_MAX_SIZE)
+
+    server_name = os.getenv("GRADIO_SERVER_NAME", "127.0.0.1")
+    root_path = os.getenv("GRADIO_ROOT_PATH", "")
+
+    if RATE_LIMIT_ENABLED:
+        from fastapi.responses import JSONResponse
+        from starlette.middleware.base import BaseHTTPMiddleware
+        from gradio.routes import App
+
+        class _RateLimitMiddleware(BaseHTTPMiddleware):
+            async def dispatch(self, request, call_next):
+                # Only guard the endpoints that hit the LLM; static assets and
+                # the initial page load must stay fast for everyone.
+                path = request.url.path
+                guarded = (
+                    request.method in {"POST", "PUT"}
+                    and ("/call" in path or "/queue/" in path or "/predict" in path)
+                )
+                if guarded and not rate_limiter.allow(client_key_from_request(request)):
+                    return JSONResponse(
+                        {"error": "Rate limit exceeded. Please slow down."},
+                        status_code=429,
+                    )
+                return await call_next(request)
+
+        # Gradio builds its FastAPI app inside launch(); inject our middleware
+        # right after the app object is created.
+        original_create_app = App.create_app.__func__
+
+        @classmethod
+        def _create_app_with_rate_limiting(cls, *args, **kwargs):
+            fastapi_app = original_create_app(cls, *args, **kwargs)
+            try:
+                fastapi_app.add_middleware(_RateLimitMiddleware)
+                logger.info(
+                    "Edge rate limiting active: %s requests/min per client",
+                    RATE_LIMIT_PER_MINUTE,
+                )
+            except Exception:
+                logger.exception("Failed to add rate limiting middleware")
+            return fastapi_app
+
+        App.create_app = _create_app_with_rate_limiting
+
     app.launch(
-        server_name="127.0.0.1",
+        server_name=server_name,
         server_port=int(os.getenv("GRADIO_SERVER_PORT", 7860)),
+        root_path=root_path or None,
+        max_threads=_env_int("GRADIO_MAX_THREADS", 64),
+        show_api=API_ENABLE,
+        quiet=True,
         # favicon_path="assets/favicon.ico"
     )
